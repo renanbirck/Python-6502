@@ -1,6 +1,6 @@
 # py6502: a 6502 emulator in Python.
 
-import logging
+import logging, pickle
 from enum import Flag
 
 class StatusRegister(Flag):
@@ -17,7 +17,13 @@ class CPU():
 
     def __init__(self, memory_size = 65536): # Inicialize a new CPU. 
                                              # The default RAM size is 64 KiB.
+        self.ticks = 0    # Tick count
 
+        # When is executed an instruction, this callback will
+        # be called as needed. It receives self, thus it has access
+        # to everything that has happening within the CPU.
+
+        self.callback_on_instruction = None 
         self.PC = 0x0000  # Program counter
         self.SP = 0x0000  # Stack pointer
         self.A, self.X, self.Y = 0x00, 0x00, 0x00 # Registers
@@ -68,3 +74,5 @@ class CPU():
 
         return value_high + value_low
 
+    def pickle_state(self):
+        pickle.dump(self, open("cpu_state", "wb"))
