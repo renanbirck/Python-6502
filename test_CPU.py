@@ -15,8 +15,6 @@ class TestCPU():
 
     def test_CPU_reset(self):
         # On reset, the 6502 reads the PC from 0xFFFC and 0xFFFD.
-
-
         self.cpu_under_test.write_RAM(0xFFFD, 0xCA)
         self.cpu_under_test.write_RAM(0xFFFC, 0xFE)
 
@@ -29,15 +27,23 @@ class TestCPU():
         assert self.cpu_under_test.PC == 0xCAFE
     
     def test_stack_push_pop_8bit(self):
+
+        previous_SP = self.cpu_under_test.SP
+
         self.cpu_under_test.push_8bit(0x42)
         self.cpu_under_test.push_8bit(0x46)
         assert self.cpu_under_test.pop_8bit() == 0x46
         assert self.cpu_under_test.pop_8bit() == 0x42
+        assert self.cpu_under_test.SP == previous_SP
 
     def test_stack_push_pop_16bit(self):
+        previous_SP = self.cpu_under_test.SP
+
         self.cpu_under_test.push_16bit(0xC0CA)
         self.cpu_under_test.push_16bit(0x50DA)
 
         assert self.cpu_under_test.pop_16bit() == 0x50DA
         assert self.cpu_under_test.pop_16bit() == 0xC0CA
+
+        assert self.cpu_under_test.SP == previous_SP
 
