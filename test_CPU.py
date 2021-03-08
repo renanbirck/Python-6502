@@ -1,10 +1,8 @@
-import pytest
-from cpu import CPU
-
+import pytest, cpu
 
 class TestCPU():
 
-    cpu_under_test = CPU()
+    cpu_under_test = cpu.CPU()
 
     def test_read_RAM_outside_bounds(self):
         with pytest.raises(IndexError):
@@ -29,6 +27,17 @@ class TestCPU():
         assert self.cpu_under_test.Y == 0x00
         assert self.cpu_under_test.SP == 0xFD
         assert self.cpu_under_test.PC == 0xCAFE
-        
+    
+    def test_stack_push_pop_8bit(self):
+        self.cpu_under_test.push_8bit(0x42)
+        self.cpu_under_test.push_8bit(0x46)
+        assert self.cpu_under_test.pop_8bit() == 0x46
+        assert self.cpu_under_test.pop_8bit() == 0x42
 
+    def test_stack_push_pop_16bit(self):
+        self.cpu_under_test.push_16bit(0xC0CA)
+        self.cpu_under_test.push_16bit(0x50DA)
+
+        assert self.cpu_under_test.pop_16bit() == 0x50DA
+        assert self.cpu_under_test.pop_16bit() == 0xC0CA
 
