@@ -15,3 +15,14 @@ class CPU():
 
     def write_RAM(self, address, value):
         self.RAM[address] = value & 0xFF  # Limit to 1 byte
+    
+    def reset_CPU(self):
+        self.A, self.X, self.Y = 0x00, 0x00, 0x00
+        self.SP = 0xFD
+
+        # 6502 is "low-endian". That is, in a 16-bit,
+        # the "low" byte comes first then the "high" byte.
+        PC_low = self.read_RAM(0xFFFC)
+        PC_high = self.read_RAM(0xFFFD)
+
+        self.PC = (PC_high << 8) | (PC_low)
