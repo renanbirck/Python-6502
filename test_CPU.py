@@ -48,3 +48,18 @@ class TestCPU():
 
         assert self.cpu_under_test.SP == previous_SP
 
+    def test_handle_invalid_opcode(self):
+
+
+        # A few invalid instructions.
+        self.cpu_under_test.write_RAM(0x0000, 0x80)
+        self.cpu_under_test.write_RAM(0x0001, 0x80)
+
+        # The reset vector.
+        self.cpu_under_test.write_RAM(0xFFFD, 0x00)
+        self.cpu_under_test.write_RAM(0xFFFC, 0x00)
+
+        self.cpu_under_test.reset_CPU()
+
+        with pytest.raises(RuntimeError):
+            self.cpu_under_test.step()

@@ -34,7 +34,7 @@ class CPU():
         return self.RAM[address]
 
     def write_RAM(self, address, value):
-        logging.info(f"RAM[0x{address:02X}] <- 0x{value:02X}")
+        print(f"RAM[0x{address:02X}] <- 0x{value:04X}")
         self.RAM[address] = value & 0xFF  # Limit to 1 byte
     
     def reset_CPU(self):
@@ -76,3 +76,24 @@ class CPU():
 
     def pickle_state(self):
         pickle.dump(self, open("cpu_state", "wb"))
+
+    def step(self):
+        # Fetch
+        
+        opcode = self.read_RAM(self.PC)
+        print(f"FETCH RAM[0x{self.PC:02X}] = 0x{opcode:02X}")
+
+        self.PC = self.PC + 1
+        
+        # Decode 
+
+        opcode_high = (opcode & 0xF0)>>4
+        opcode_low = opcode & 0x0F
+
+        # Trap illegal opcodes
+        # ref. https://www.masswerk.at/6502/6502_instruction_set.html                
+
+        if opcode_low in [0x03, 0x07, 0x0B, 0x0F] or opcode in [0x80]:
+            raise RuntimeError(f"Invalid opcode 0x{opcode:02X} at 0x{self.PC:02X}!")
+
+        # Execute
