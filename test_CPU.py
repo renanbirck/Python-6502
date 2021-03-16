@@ -49,8 +49,6 @@ class TestCPU():
         assert self.cpu_under_test.SP == previous_SP
 
     def test_handle_invalid_opcode(self):
-
-
         # A few invalid instructions.
         self.cpu_under_test.write_RAM(0x0000, 0x80)
         self.cpu_under_test.write_RAM(0x0001, 0x80)
@@ -63,3 +61,39 @@ class TestCPU():
 
         with pytest.raises(RuntimeError):
             self.cpu_under_test.step()
+
+    def test_handle_unimplemented_opcode(self):
+        # A few unimplemented instructions.
+        self.cpu_under_test.write_RAM(0x0000, 0x00)
+        self.cpu_under_test.write_RAM(0x0001, 0x00)
+
+        # The reset vector.
+        self.cpu_under_test.write_RAM(0xFFFD, 0x00)
+        self.cpu_under_test.write_RAM(0xFFFC, 0x00)
+
+        self.cpu_under_test.reset_CPU()
+
+        with pytest.raises(NotImplementedError):
+            self.cpu_under_test.step()
+    
+    def test_handle_invalid_RAM_write(self):
+        self.cpu_under_test.write_RAM(0x0000, 0x6502)
+        assert self.cpu_under_test.read_RAM(0x0000) == 0x02
+
+    ### Instruction tests
+
+    def test_BRK(self):
+        self.cpu_under_test.write_RAM(0xFFFE, 0xCA)
+        self.cpu_under_test.write_RAM(0xFFFF, 0xC0)
+
+        self.cpu_under_test.reset_CPU()
+        self.cpu_under_test.PC = 0x1234
+
+        self.cpu_under_test.BRK()
+
+        # The old PC, added by 1, is pushed upon the stack?
+        assert self.cpu_under_test.pop_16bit() == 0x1235
+
+        # The BRK vector is read?
+        assert self.cpu_under_test.PC == 0xC0CA
+        

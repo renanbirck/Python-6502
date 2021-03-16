@@ -29,6 +29,7 @@ class CPU():
         self.A, self.X, self.Y = 0x00, 0x00, 0x00 # Registers
         self.RAM = [0x00] * memory_size
         self.STACK_BASE = 0x100
+        self.STATUS = StatusRegister(0x00)
 
     def read_RAM(self, address):
         return self.RAM[address]
@@ -83,7 +84,7 @@ class CPU():
         opcode = self.read_RAM(self.PC)
         print(f"FETCH RAM[0x{self.PC:02X}] = 0x{opcode:02X}")
 
-        self.PC = self.PC + 1
+        self.PC += 1
         
         # Decode 
 
@@ -95,5 +96,14 @@ class CPU():
 
         if opcode_low in [0x03, 0x07, 0x0B, 0x0F] or opcode in [0x80]:
             raise RuntimeError(f"Invalid opcode 0x{opcode:02X} at 0x{self.PC:02X}!")
+        else:
+            raise NotImplementedError(f"Instruction 0x{opcode:02X} not yet implemented!")        # Execute
+    
+    def BRK(self):
+        self.PC += 1
+        # TODO: handle the stack
+        self.push_16bit(self.PC)
 
-        # Execute
+        # Read the new PC from the BRK vector
+        self.PC = (self.read_RAM(0xFFFF)) << 8 | self.read_RAM(0xFFFE)
+        
