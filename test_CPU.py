@@ -94,6 +94,31 @@ class TestCPU():
         # The old PC, added by 1, is pushed upon the stack?
         assert self.cpu_under_test.pop_16bit() == 0x1235
 
+        # The interrupt flag is set?
+        assert (self.cpu_under_test.STATUS and cpu.StatusRegister.INTERRUPT) != 0
+
         # The BRK vector is read?
         assert self.cpu_under_test.PC == 0xC0CA
+
+    def test_CL_instructions(self):
+        # Test the simpler instructions (i.e. the ones that just clear flags)  
+
+        self.cpu_under_test.STATUS = cpu.StatusRegister.NOTHING 
+
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.CARRY
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.DECIMAL
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.INTERRUPT
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.OVERFLOW
+        
+        self.cpu_under_test.CLC()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.CARRY.value) == 0
+
+        self.cpu_under_test.CLD()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.DECIMAL.value) == 0
+
+        self.cpu_under_test.CLI()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.INTERRUPT.value) == 0
+
+        self.cpu_under_test.CLV()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.OVERFLOW.value) == 0
         

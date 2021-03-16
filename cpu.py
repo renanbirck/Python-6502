@@ -4,14 +4,15 @@ import logging, pickle
 from enum import Flag
 
 class StatusRegister(Flag):
-    SIGN      = 0x80     # Negative
-    OVERFLOW  = 0x40
-    UNUSED    = 0x20
-    BREAK     = 0x10     # Instruction 'BRK' was called.
-    DECIMAL   = 0x08
-    INTERRUPT = 0x04
-    ZERO      = 0x02
-    CARRY     = 0x01
+    SIGN       = 0x80     # Negative
+    OVERFLOW   = 0x40
+    UNUSED     = 0x20
+    BREAK      = 0x10     # Instruction 'BRK' was called.
+    DECIMAL    = 0x08
+    INTERRUPT  = 0x04
+    ZERO       = 0x02
+    CARRY      = 0x01
+    NOTHING    = 0x00
 
 class CPU():
 
@@ -99,11 +100,23 @@ class CPU():
         else:
             raise NotImplementedError(f"Instruction 0x{opcode:02X} not yet implemented!")        # Execute
     
+    ## The instructions themselves
+
     def BRK(self):
         self.PC += 1
         # TODO: handle the stack
         self.push_16bit(self.PC)
-
         # Read the new PC from the BRK vector
         self.PC = (self.read_RAM(0xFFFF)) << 8 | self.read_RAM(0xFFFE)
-        
+    
+    def CLC(self):
+        self.STATUS &= ~StatusRegister.CARRY
+    
+    def CLD(self):
+        self.STATUS &= ~StatusRegister.DECIMAL
+
+    def CLI(self):
+        self.STATUS &= ~StatusRegister.INTERRUPT
+
+    def CLV(self):
+        self.STATUS &= ~StatusRegister.OVERFLOW
