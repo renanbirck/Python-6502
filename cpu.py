@@ -1,7 +1,7 @@
 # py6502: a 6502 emulator in Python.
 
 import logging, pickle
-from enum import Flag
+from enum import Enum, Flag, auto
 
 class StatusRegister(Flag):
     SIGN       = 0x80     # Negative
@@ -14,8 +14,23 @@ class StatusRegister(Flag):
     CARRY      = 0x01
     NOTHING    = 0x00
 
-class CPU():
+class AddressingMode(Enum):
+    IMPLIED = auto()
+    ACCUMULATOR = auto()
+    IMMEDIATE = auto()
+    ZERO_PAGE = auto()
+    ZERO_PAGE_X = auto()
+    ZERO_PAGE_Y = auto()
+    RELATIVE = auto()
+    ABSOLUTE = auto()
+    ABSOLUTE_X = auto()
+    ABSOLUTE_Y = auto()
+    INDIRECT = auto()
+    INDIRECT_X = auto()
+    INDIRECT_Y = auto()
+  
 
+class CPU():
     def __init__(self, memory_size = 65536): # Inicialize a new CPU. 
                                              # The default RAM size is 64 KiB.
         self.ticks = 0    # Tick count
@@ -79,6 +94,20 @@ class CPU():
     def pickle_state(self):
         pickle.dump(self, open("cpu_state", "wb"))
 
+    def find_addressing_mode(self, opcode):
+        # Given opcode, find its addressing mode.
+        
+        opcode_high = (opcode & 0xF0)>>4
+        opcode_low = opcode & 0x0F
+        
+        # This is a copy/paste from the datasheet so it's not like we can simplify it much.
+        if opcode == 0x20 or (opcode != 0x6C and opcode_high in [0x00, 0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C, 0x0E] 
+                              and opcode_low in [0x0C, 0x0D, 0x0E, 0x0F]):
+            return AddressingMode.ABSOLUTE
+
+        # The default (most common) is implied addressing.
+        return AddressingMode.IMPLIED
+        
     def step(self):
         # Fetch
         
@@ -99,6 +128,8 @@ class CPU():
             raise RuntimeError(f"Invalid opcode 0x{opcode:02X} at 0x{self.PC:02X}!")
         else:
             raise NotImplementedError(f"Instruction 0x{opcode:02X} not yet implemented!")        # Execute
+    
+
     
     ## The instructions themselves
 

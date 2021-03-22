@@ -121,4 +121,19 @@ class TestCPU():
 
         self.cpu_under_test.CLV()
         assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.OVERFLOW.value) == 0
+
+    # Given an instruction, find out its addressing mode.
+    def test_find_addressing_mode(self):
+
+        for opcode in [0x0C, 0x0D, 0x0E, 0x0F, 0x20, 0x2C, 
+                        0x2D, 0x2E, 0x2F, 0x4C, 0x4D, 0x4E,
+                        0x4F, 0x6D, 0x6E, 0x6F, 0x8C, 0x8D,
+                        0x8E, 0x8F, 0xAC, 0xAD, 0xAE, 0xAF,
+                        0xCC, 0xCD, 0xCE, 0xCF, 0xEC, 0xED,
+                        0xEE, 0xEF]:
+                        assert self.cpu_under_test.find_addressing_mode(opcode) == cpu.AddressingMode.ABSOLUTE
+
+        
+        assert self.cpu_under_test.find_addressing_mode(0x00) == cpu.AddressingMode.IMPLIED
+
         
