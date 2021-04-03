@@ -133,7 +133,21 @@ class TestCPU():
                         0xEE, 0xEF]:
                         assert self.cpu_under_test.find_addressing_mode(opcode) == cpu.AddressingMode.ABSOLUTE
 
-        
+        for opcode in [0x1C, 0x1D, 0x1E, 0x1F, 0x3C, 0x3D, 0x3E, 
+                       0x3F, 0x5C, 0x5D, 0x5E, 0x5F, 0x7C, 0x7D,
+                       0x7E, 0x7F, 0x9C, 0x9D, 0xBC, 0xBD, 0xDC,
+                       0xDD, 0xDE, 0xDF, 0xFC, 0xFD, 0xFE, 0xFF]:
+                       assert self.cpu_under_test.find_addressing_mode(opcode) == cpu.AddressingMode.ABSOLUTE_X
+
+        for opcode in [0x19, 0x1B, 0x39, 0x3B, 0x59, 
+                       0x5B, 0x79, 0x7B, 0x99, 0x9B, 
+                       0x9E, 0x9F, 0xB9, 0xBB, 0xBE, 
+                       0xBF, 0xD9, 0xDB, 0xF9, 0xFB]:
+                       assert self.cpu_under_test.find_addressing_mode(opcode) == cpu.AddressingMode.ABSOLUTE_Y
+
+        for opcode in [0x0A, 0x2A, 0x4A, 0x6A]:
+                       assert self.cpu_under_test.find_addressing_mode(opcode) == cpu.AddressingMode.ACCUMULATOR
+                       
         assert self.cpu_under_test.find_addressing_mode(0x00) == cpu.AddressingMode.IMPLIED
 
         

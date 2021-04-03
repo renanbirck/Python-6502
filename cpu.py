@@ -100,10 +100,16 @@ class CPU():
         opcode_high = (opcode & 0xF0)>>4
         opcode_low = opcode & 0x0F
         
-        # This is a copy/paste from the datasheet so it's not like we can simplify it much.
         if opcode == 0x20 or (opcode != 0x6C and opcode_high in [0x00, 0x02, 0x04, 0x06, 0x08, 0x0A, 0x0C, 0x0E] 
-                              and opcode_low in [0x0C, 0x0D, 0x0E, 0x0F]):
+                                             and opcode_low  in [0x0C, 0x0D, 0x0E, 0x0F]):
             return AddressingMode.ABSOLUTE
+        elif (opcode_high in [0x1, 0x3, 0x5, 0x7, 0xD, 0xF] and opcode_low in [0x0C, 0x0D, 0x0E, 0x0F]) or (opcode in [0x9C, 0x9D, 0xBC, 0xBD]):
+            return AddressingMode.ABSOLUTE_X
+        elif ((opcode_low in [0x9, 0xB] and opcode_high in [0x1, 0x3, 0x5, 0x7, 0xD, 0xF])
+        or (opcode_low in [0x9, 0xB, 0xE, 0xF] and opcode_high in [0x9, 0xB])):
+            return AddressingMode.ABSOLUTE_Y
+        elif opcode_high in [0x0, 0x2, 0x4, 0x6] and opcode_low == 0xA:
+            return AddressingMode.ACCUMULATOR
 
         # The default (most common) is implied addressing.
         return AddressingMode.IMPLIED
