@@ -4,9 +4,6 @@ class TestCPU():
 
     cpu_under_test = cpu.CPU()
 
-    def test_dump_state(self):
-        self.cpu_under_test.pickle_state()
-
     def test_read_RAM_outside_bounds(self):
         with pytest.raises(IndexError):
             self.cpu_under_test.read_RAM(0xFFFFFFFF)
@@ -88,9 +85,17 @@ class TestCPU():
 
         self.cpu_under_test.reset_CPU()
         self.cpu_under_test.PC = 0x1234
-
+        
+        # Force a dummy status.
+        self.cpu_under_test.STATUS = cpu.StatusRegister.OVERFLOW |  cpu.StatusRegister.ZERO
+        
         self.cpu_under_test.BRK()
 
+        previous_CPU_status = self.cpu_under_test.STATUS.value
+        
+        # The status was save?
+        assert self.cpu_under_test.pop_8bit() == previous_CPU_status
+        
         # The old PC, added by 1, is pushed upon the stack?
         assert self.cpu_under_test.pop_16bit() == 0x1235
 

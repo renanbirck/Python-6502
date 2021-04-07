@@ -1,6 +1,5 @@
 # py6502: a 6502 emulator in Python.
 
-import logging, pickle
 from enum import Enum, Flag, auto
 
 class StatusRegister(Flag):
@@ -51,11 +50,13 @@ class CPU():
         return self.RAM[address]
 
     def write_RAM(self, address, value):
+        if isinstance(value, StatusRegister):
+            value = value.value  # yeah, I know. Horrible.
+            
         print(f"RAM[0x{address:02X}] <- 0x{value:04X}")
         self.RAM[address] = value & 0xFF  # Limit to 1 byte
 
     def reset_CPU(self):
-        logging.info("CPU reset.")
         self.A, self.X, self.Y = 0x00, 0x00, 0x00
         self.SP = 0xFD
 
@@ -148,8 +149,10 @@ class CPU():
     ## The instructions themselves
     def BRK(self):
         self.PC += 1
-        # TODO: handle the stack
+        # Save PC++ to stack.
         self.push_16bit(self.PC)
+        # Push CPU status to stack.
+        self.push_8bit(self.STATUS)
         # Read the new PC from the BRK vector
         self.PC = (self.read_RAM(0xFFFF)) << 8 | self.read_RAM(0xFFFE)
 
