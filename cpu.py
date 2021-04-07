@@ -91,9 +91,6 @@ class CPU():
 
         return value_high + value_low
 
-    def pickle_state(self):
-        pickle.dump(self, open("cpu_state", "wb"))
-
     def find_addressing_mode(self, opcode):
         # Given opcode, find its addressing mode.
 
