@@ -169,6 +169,13 @@ class TestCPU():
         assert self.cpu_under_test.find_addressing_mode(0x00) == cpu.AddressingMode.IMPLIED
 
 
+    def test_decode_instruction(self):
+        opcode = 0x80
+        instruction, addressing_mode, cost = self.cpu_under_test.decode_instruction(opcode)
+        assert instruction == self.cpu_under_test.NOP
+        assert addressing_mode == cpu.AddressingMode.IMMEDIATE
+        assert cost == 2
+        
     ##### INSTRUCTION TESTS
     def test_CL_instructions(self):
         # Test the simpler instructions (i.e. the ones that just clear flags)  
