@@ -127,6 +127,7 @@ class CPU():
         
         # The default (most common) is implied addressing.
         return AddressingMode.IMPLIED
+    
         
     def step(self):
         # Fetch
@@ -134,10 +135,10 @@ class CPU():
         print(f"FETCH RAM[0x{self.PC:02X}] = 0x{opcode:02X}")
         self.PC += 1
 
-        # Decode 
+        # Decode (i.e. find which instruction, the addressing mode and its cost in ticks)
         opcode_high = (opcode & 0xF0)>>4
         opcode_low = opcode & 0x0F
-
+        
         # Trap illegal opcodes
         # ref. https://www.masswerk.at/6502/6502_instruction_set.html                
 

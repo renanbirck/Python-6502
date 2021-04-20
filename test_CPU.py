@@ -105,27 +105,6 @@ class TestCPU():
         # The BRK vector is read?
         assert self.cpu_under_test.PC == 0xC0CA
 
-    def test_CL_instructions(self):
-        # Test the simpler instructions (i.e. the ones that just clear flags)  
-
-        self.cpu_under_test.STATUS = cpu.StatusRegister.NOTHING 
-
-        self.cpu_under_test.STATUS |= cpu.StatusRegister.CARRY
-        self.cpu_under_test.STATUS |= cpu.StatusRegister.DECIMAL
-        self.cpu_under_test.STATUS |= cpu.StatusRegister.INTERRUPT
-        self.cpu_under_test.STATUS |= cpu.StatusRegister.OVERFLOW
-        
-        self.cpu_under_test.CLC()
-        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.CARRY.value) == 0
-
-        self.cpu_under_test.CLD()
-        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.DECIMAL.value) == 0
-
-        self.cpu_under_test.CLI()
-        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.INTERRUPT.value) == 0
-
-        self.cpu_under_test.CLV()
-        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.OVERFLOW.value) == 0
 
     # Given an instruction, find out its addressing mode.
     def test_find_addressing_mode(self):
@@ -187,11 +166,29 @@ class TestCPU():
         for opcode in [0x96, 0x97, 0xB6, 0xB7]:
                        assert self.cpu_under_test.find_addressing_mode(opcode) == cpu.AddressingMode.ZERO_PAGE_Y
 
-        
-
-                       
-
-
         assert self.cpu_under_test.find_addressing_mode(0x00) == cpu.AddressingMode.IMPLIED
 
+
+    ##### INSTRUCTION TESTS
+    def test_CL_instructions(self):
+        # Test the simpler instructions (i.e. the ones that just clear flags)  
+
+        self.cpu_under_test.STATUS = cpu.StatusRegister.NOTHING 
+
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.CARRY
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.DECIMAL
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.INTERRUPT
+        self.cpu_under_test.STATUS |= cpu.StatusRegister.OVERFLOW
         
+        self.cpu_under_test.CLC()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.CARRY.value) == 0
+
+        self.cpu_under_test.CLD()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.DECIMAL.value) == 0
+
+        self.cpu_under_test.CLI()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.INTERRUPT.value) == 0
+
+        self.cpu_under_test.CLV()
+        assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.OVERFLOW.value) == 0
+ 
