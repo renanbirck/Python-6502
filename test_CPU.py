@@ -172,9 +172,17 @@ class TestCPU():
     def test_decode_instruction(self):
         opcode = 0x80
         instruction, addressing_mode, cost = self.cpu_under_test.decode_instruction(opcode)
+        
         assert instruction == self.cpu_under_test.NOP
         assert addressing_mode == cpu.AddressingMode.IMMEDIATE
         assert cost == 2
+        
+        opcode = 0x18 # CLC
+        instruction, addressing_mode, cost = self.cpu_under_test.decode_instruction(opcode)
+        assert instruction == self.cpu_under_test.CLC
+        assert addressing_mode == cpu.AddressingMode.IMPLIED
+        assert cost == 2
+        
         
     ##### INSTRUCTION TESTS
     def test_CL_instructions(self):

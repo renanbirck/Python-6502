@@ -39,8 +39,7 @@ class CPU():
         # to everything that has happening within the CPU.
 
         self.callback_on_instruction = None
-        self.PC = 0x0000  # Program counter
-        self.SP = 0x0000  # Stack pointer
+        self.PC, self.SP = 0x0000, 0x00  # Program counter, stack pointer
         self.A, self.X, self.Y = 0x00, 0x00, 0x00 # Registers
         self.RAM = [0x00] * memory_size
         self.STACK_BASE = 0x100
@@ -142,10 +141,18 @@ class CPU():
         # The default (most common) is implied addressing.
         return AddressingMode.IMPLIED
     
+    def find_instruction_cost(self, opcode):
+        return 2
+    
+    def find_instruction(self, opcode):
+        if opcode == 0x18:
+            return self.CLC
+        return self.NOP
+        
     def decode_instruction(self, opcode):
-        instruction = self.NOP
+        instruction = self.find_instruction(opcode)
         addressing_mode = self.find_addressing_mode(opcode)
-        cost = 2
+        cost = self.find_instruction_cost(opcode)
         return (instruction, addressing_mode, cost)
             
     def step(self):
