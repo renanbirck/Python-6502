@@ -187,7 +187,12 @@ class TestCPU():
         
         
         
+        
     ##### INSTRUCTION TESTS
+    
+    def test_NOP(self):
+        self.cpu_under_test.NOP()
+        
     def test_CL_instructions(self):
         # Test the simpler instructions (i.e. the ones that just clear flags)  
 
