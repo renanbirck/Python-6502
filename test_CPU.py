@@ -176,7 +176,7 @@ class TestCPU():
         assert instruction == self.cpu_under_test.CLC
         assert addressing_mode == cpu.AddressingMode.IMPLIED
         assert cost == 2
-
+        
     ##### INSTRUCTION TESTS
 
     def test_NOP(self):
@@ -202,3 +202,4 @@ class TestCPU():
 
         self.cpu_under_test.CLV()
         assert (self.cpu_under_test.STATUS.value & cpu.StatusRegister.OVERFLOW.value) == 0
+

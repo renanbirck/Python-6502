@@ -41,11 +41,6 @@ class CPU():
 
         self.ticks = 0 # Tick count
 
-        # When is executed an instruction, this callback will
-        # be called as needed. It receives self, thus it has access
-        # to everything that has happening within the CPU.
-
-        self.callback_on_instruction = None
         self.PC, self.SP = 0x0000, 0x00  # Program counter, stack pointer
         self.A, self.X, self.Y = 0x00, 0x00, 0x00 # Registers
         self.RAM = [0x00] * memory_size
