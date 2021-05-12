@@ -46,9 +46,11 @@ class TestCPU():
         assert self.cpu_under_test.SP == previous_SP
 
     def test_handle_invalid_opcode(self):
+        # TODO: remove those tests when all the instructions are implemented!
+        
         # A few invalid instructions.
-        self.cpu_under_test.write_RAM(0x0000, 0x80)
-        self.cpu_under_test.write_RAM(0x0001, 0x80)
+        self.cpu_under_test.write_RAM(0x0000, 0x82)
+        self.cpu_under_test.write_RAM(0x0001, 0x82)
 
         # The reset vector.
         self.cpu_under_test.write_RAM(0xFFFD, 0x00)
@@ -56,13 +58,13 @@ class TestCPU():
 
         self.cpu_under_test.reset_CPU()
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(NotImplementedError):
             self.cpu_under_test.step()
 
     def test_handle_unimplemented_opcode(self):
         # A few unimplemented instructions.
-        self.cpu_under_test.write_RAM(0x0000, 0x00)
-        self.cpu_under_test.write_RAM(0x0001, 0x00)
+        self.cpu_under_test.write_RAM(0x0000, 0x01)
+        self.cpu_under_test.write_RAM(0x0001, 0x01)
 
         # The reset vector.
         self.cpu_under_test.write_RAM(0xFFFD, 0x00)
@@ -182,6 +184,7 @@ class TestCPU():
         assert instruction == self.cpu_under_test.CLC
         assert addressing_mode == cpu.AddressingMode.IMPLIED
         assert cost == 2
+        
         
         
     ##### INSTRUCTION TESTS
