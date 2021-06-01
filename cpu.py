@@ -214,7 +214,10 @@ class CPU():
             self.PC += 1  # PC++
             self.EA = self.read_RAM(self.PC) # EA <- RAM[PC]
             ### Since 0 <= PC <= 0xFF... reads from zero-page
-
+        elif addressing_mode == AddressingMode.ZERO_PAGE_X:
+            self.PC += 1
+            self.EA = self.read_RAM((self.PC + self.X) & 0xFF)
+            
     def step(self):
         # Fetch
         opcode = self.read_RAM(self.PC)
