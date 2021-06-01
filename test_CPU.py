@@ -204,13 +204,27 @@ class TestCPU():
             self.cpu_under_test.write_RAM(position, value)
         self.cpu_under_test.PC = 0x4006
         self.cpu_under_test.X = 0x03
-        target_EA = self.cpu_under_test.PC + self.cpu_under_test.X + 1
+                
+        # The target address we want: PC + 1 + X
+        target_EA = self.cpu_under_test.PC + self.cpu_under_test.X + 1 
 
         self.cpu_under_test.compute_effective_address(cpu.AddressingMode.ZERO_PAGE_X) # EA <- RAM[PC+1+X]
-        
-        
         assert self.cpu_under_test.EA == self.cpu_under_test.read_RAM(target_EA)
-        
+    
+    def test_find_effective_address_zpy(self):
+        # Zero-page, X mode. EA <- RAM[PC+1+Y]
+        for position in range(0, 65536):
+            value = position & 0xFF
+            self.cpu_under_test.write_RAM(position, value)
+        self.cpu_under_test.PC = 0x4002
+        self.cpu_under_test.Y = 0x03
+                
+        # The target address we want: PC + 1 + Y
+        target_EA = self.cpu_under_test.PC + self.cpu_under_test.Y + 1 
+
+        self.cpu_under_test.compute_effective_address(cpu.AddressingMode.ZERO_PAGE_Y) # EA <- RAM[PC+1+X]
+        assert self.cpu_under_test.EA == self.cpu_under_test.read_RAM(target_EA)
+    
         
         
     ##### INSTRUCTION TESTS

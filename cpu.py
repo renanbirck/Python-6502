@@ -207,16 +207,18 @@ class CPU():
         if addressing_mode in [AddressingMode.ACCUMULATOR,
                                AddressingMode.IMPLIED]:
             return
-        elif addressing_mode == AddressingMode.IMMEDIATE:
+
+        else:
             self.PC += 1
-            self.EA = self.PC
-        elif addressing_mode == AddressingMode.ZERO_PAGE:
-            self.PC += 1  # PC++
-            self.EA = self.read_RAM(self.PC) # EA <- RAM[PC]
-            ### Since 0 <= PC <= 0xFF... reads from zero-page
-        elif addressing_mode == AddressingMode.ZERO_PAGE_X:
-            self.PC += 1
-            self.EA = self.read_RAM((self.PC + self.X) & 0xFF)
+            if addressing_mode == AddressingMode.IMMEDIATE:
+                self.EA = self.PC
+            elif addressing_mode == AddressingMode.ZERO_PAGE:
+                self.EA = self.read_RAM(self.PC) # EA <- RAM[PC]
+                ### Since 0 <= PC <= 0xFF... reads from zero-page
+            elif addressing_mode == AddressingMode.ZERO_PAGE_X:
+                self.EA = self.read_RAM((self.PC + self.X) & 0xFF)
+            elif addressing_mode == AddressingMode.ZERO_PAGE_Y:
+                self.EA = self.read_RAM((self.PC + self.Y) & 0xFF)
             
     def step(self):
         # Fetch
