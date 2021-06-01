@@ -176,6 +176,27 @@ class TestCPU():
         assert instruction == self.cpu_under_test.CLC
         assert addressing_mode == cpu.AddressingMode.IMPLIED
         assert cost == 2
+    
+    # imp, acc don't change ea, so they are not tested.
+    def test_find_effective_address_imm(self):
+        # Immediate. EA <- PC+1
+        PC_old = self.cpu_under_test.PC
+
+        self.cpu_under_test.compute_effective_address(cpu.AddressingMode.IMMEDIATE)
+        assert self.cpu_under_test.EA == PC_old + 1
+
+    def test_find_effective_address_zp(self):
+        # Zero-page mode. EA <- RAM[PC+1]
+        
+        # Inicialize the RAM that will be used for the test.
+        for position in range(0, 65536):
+            value = position & 0xFF
+            self.cpu_under_test.write_RAM(position, value)
+        
+        self.cpu_under_test.PC = 0x4000  # PC <- 0x4000
+        self.cpu_under_test.compute_effective_address(cpu.AddressingMode.ZERO_PAGE) # EA <- RAM[PC+1]
+        assert self.cpu_under_test.EA == self.cpu_under_test.read_RAM(0x4001)
+        
         
     ##### INSTRUCTION TESTS
 

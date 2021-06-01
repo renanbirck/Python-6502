@@ -197,7 +197,6 @@ class CPU():
         return NotImplementedError(f"Instruction 0x{opcode:02X} not implemented yet!")
 
     def decode_instruction(self, opcode):
-
         instruction = self.find_instruction(opcode)
         addressing_mode = self.find_addressing_mode(opcode)
         cost = self.find_instruction_cost(opcode)
@@ -205,7 +204,16 @@ class CPU():
         return (instruction, addressing_mode, cost)
 
     def compute_effective_address(self, addressing_mode):
-        pass
+        if addressing_mode in [AddressingMode.ACCUMULATOR,
+                               AddressingMode.IMPLIED]:
+            return
+        elif addressing_mode == AddressingMode.IMMEDIATE:
+            self.PC += 1
+            self.EA = self.PC
+        elif addressing_mode == AddressingMode.ZERO_PAGE:
+            self.PC += 1  # PC++
+            self.EA = self.read_RAM(self.PC) # EA <- RAM[PC]
+            ### Since 0 <= PC <= 0xFF... reads from zero-page
 
     def step(self):
         # Fetch
@@ -230,6 +238,7 @@ class CPU():
 
     ## The instructions themselves
     def BRK(self):  # 0x00
+        """ BRK: force break. """
         self.PC += 1
         # Save PC++ to stack.
         self.push_16bit(self.PC)
